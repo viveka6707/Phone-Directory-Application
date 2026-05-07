@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phone Directory Application</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            max-width: 800px;
+            width: 100%;
+            padding: 40px;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 30px;
+            text-align: center;
+            font-size: 28px;
+        }
+
+        .menu {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+
+        button {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .menu-btn {
+            background-color: #667eea;
+            color: white;
+        }
+
+        .menu-btn:hover {
+            background-color: #5568d3;
+            transform: scale(1.05);
+        }
+
+        .menu-btn.active {
+            background-color: #764ba2;
+        }
+
+        .form-section {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .form-section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #333;
+            font-weight: 500;
+        }
+
+        input[type="text"],
+        input[type="tel"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+            transition: border-color 0.3s ease;
+        }
+
+        input[type="text"]:focus,
+        input[type="tel"]:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 5px rgba(102, 126, 234, 0.3);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .btn-submit {
+            background-color: #28a745;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+            flex: 1;
+        }
+
+        .btn-submit:hover {
+            background-color: #218838;
+        }
+
+        .btn-cancel {
+            background-color: #dc3545;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+            flex: 1;
+        }
+
+        .btn-cancel:hover {
+            background-color: #c82333;
+        }
+
+        .message {
+            padding: 12px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            display: none;
+            animation: slideDown 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .message.success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+            display: block;
+        }
+
+        .message.error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+            display: block;
+        }
+
+        .message.info {
+            background-color: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+            display: block;
+        }
+
+        .contacts-list {
+            margin-top: 20px;
+        }
+
+        .contact-item {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+
+        .contact-item:hover {
+            background: #e9ecef;
+            transform: translateX(5px);
+        }
+
+        .contact-info {
+            flex: 1;
+        }
+
+        .contact-name {
+            font-weight: bold;
+            color: #333;
+            font-size: 16px;
+        }
+
+        .contact-phone {
+            color: #666;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+
+        .contact-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-edit,
+        .btn-delete {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .btn-edit {
+            background-color: #ffc107;
+            color: #333;
+        }
+
+        .btn-edit:hover {
+            background-color: #ffb300;
+            transform: scale(1.05);
+        }
+
+        .btn-delete {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        .btn-delete:hover {
+            background-color: #c82333;
+            transform: scale(1.05);
+        }
+
+        .empty-state {
+            text-align: center;
+            color: #999;
+            padding: 40px 20px;
+            font-style: italic;
+        }
+
+        .search-box {
+            margin-bottom: 20px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 5px rgba(102, 126, 234, 0.3);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📱 Phone Directory Application</h1>
+        
+        <div id="message" class="message"></div>
+
+        <div class="menu">
+            <button class="menu-btn active" onclick="showSection('add')">Add Contact</button>
+            <button class="menu-btn" onclick="showSection('display')">Display Contacts</button>
+            <button class="menu-btn" onclick="showSection('search')">Search Contact</button>
+            <button class="menu-btn" onclick="showSection('delete')">Delete Contact</button>
+        </div>
+
+        <!-- Add Contact Section -->
+        <div id="add" class="form-section active">
+            <h2>Add New Contact</h2>
+            <form onsubmit="addContact(event)">
+                <div class="form-group">
+                    <label for="name">Contact Name:</label>
+                    <input type="text" id="name" name="name" required placeholder="Enter full name">
+                </div>
+                <div class="form-group">
+                    <label for="phone">Phone Number:</label>
+                    <input type="tel" id="phone" name="phone" required placeholder="Enter phone number">
+                </div>
+                <div class="action-buttons">
+                    <button type="submit" class="btn-submit">Add Contact</button>
+                    <button type="button" class="btn-cancel" onclick="clearForm()">Clear</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Display Contacts Section -->
+        <div id="display" class="form-section">
+            <h2>All Contacts</h2>
+            <div class="search-box">
+                <input type="text" class="search-input" id="searchFilter" placeholder="Filter contacts by name...">
+            </div>
+            <div id="contactsList" class="contacts-list"></div>
+        </div>
+
+        <!-- Search Contact Section -->
+        <div id="search" class="form-section">
+            <h2>Search Contact</h2>
+            <form onsubmit="searchContact(event)">
+                <div class="form-group">
+                    <label for="searchName">Enter Name to Search:</label>
+                    <input type="text" id="searchName" name="searchName" required placeholder="Enter contact name">
+                </div>
+                <div class="action-buttons">
+                    <button type="submit" class="btn-submit">Search</button>
+                </div>
+            </form>
+            <div id="searchResult"></div>
+        </div>
+
+        <!-- Delete Contact Section -->
+        <div id="delete" class="form-section">
+            <h2>Delete Contact</h2>
+            <form onsubmit="deleteContact(event)">
+                <div class="form-group">
+                    <label for="deleteName">Enter Name to Delete:</label>
+                    <input type="text" id="deleteName" name="deleteName" required placeholder="Enter contact name">
+                </div>
+                <div class="action-buttons">
+                    <button type="submit" class="btn-submit">Delete</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Initialize contacts from localStorage
+        let contacts = JSON.parse(localStorage.getItem('phoneDirectory')) || [];
+
+        function showMessage(message, type) {
+            const messageEl = document.getElementById('message');
+            messageEl.textContent = message;
+            messageEl.className = `message ${type}`;
+            setTimeout(() => {
+                messageEl.className = 'message';
+            }, 3000);
+        }
+
+        function showSection(sectionId) {
+            // Hide all sections
+            document.querySelectorAll('.form-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // Remove active class from all menu buttons
+            document.querySelectorAll('.menu-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+
+            // Show selected section
+            document.getElementById(sectionId).classList.add('active');
+            
+            // Add active class to clicked button
+            event.target.classList.add('active');
+
+            // Load contacts if display section
+            if (sectionId === 'display') {
+                displayContacts();
+            }
+        }
+
+        function saveContacts() {
+            localStorage.setItem('phoneDirectory', JSON.stringify(contacts));
+        }
+
+        function addContact(event) {
+            event.preventDefault();
+            
+            const name = document.getElementById('name').value.trim();
+            const phone = document.getElementById('phone').value.trim();
+
+            if (!name || !phone) {
+                showMessage('Please fill in all fields', 'error');
+                return;
+            }
+
+            // Check if contact already exists
+            if (contacts.some(c => c.name.toLowerCase() === name.toLowerCase())) {
+                showMessage('Contact with this name already exists', 'error');
+                return;
+            }
+
+            contacts.push({ name, phone });
+            saveContacts();
+            
+            showMessage('Contact added successfully!', 'success');
+            clearForm();
+        }
+
+        function clearForm() {
+            document.getElementById('name').value = '';
+            document.getElementById('phone').value = '';
+        }
+
+        function displayContacts() {
+            const contactsList = document.getElementById('contactsList');
+            const searchFilter = document.getElementById('searchFilter').value.toLowerCase();
+
+            let filtered = contacts.filter(c => 
+                c.name.toLowerCase().includes(searchFilter)
+            );
+
+            if (filtered.length === 0) {
+                contactsList.innerHTML = '<div class="empty-state">No contacts found. Add one to get started!</div>';
+                return;
+            }
+
+            contactsList.innerHTML = filtered.map((contact, index) => `
+                <div class="contact-item">
+                    <div class="contact-info">
+                        <div class="contact-name">${escapeHtml(contact.name)}</div>
+                        <div class="contact-phone">📞 ${escapeHtml(contact.phone)}</div>
+                    </div>
+                    <div class="contact-actions">
+                        <button class="btn-edit" onclick="editContact('${contact.name}')">Edit</button>
+                        <button class="btn-delete" onclick="confirmDelete('${contact.name}')">Delete</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function searchContact(event) {
+            event.preventDefault();
+            
+            const searchName = document.getElementById('searchName').value.trim();
+            const searchResult = document.getElementById('searchResult');
+
+            const found = contacts.find(c => c.name.toLowerCase() === searchName.toLowerCase());
+
+            if (found) {
+                searchResult.innerHTML = `
+                    <div class="contact-item" style="margin-top: 20px;">
+                        <div class="contact-info">
+                            <div class="contact-name">${escapeHtml(found.name)}</div>
+                            <div class="contact-phone">📞 ${escapeHtml(found.phone)}</div>
+                        </div>
+                    </div>
+                `;
+                showMessage('Contact found!', 'success');
+            } else {
+                searchResult.innerHTML = '<div class="empty-state">Contact not found.</div>';
+                showMessage('Contact not found', 'error');
+            }
+        }
+
+        function editContact(name) {
+            const newPhone = prompt('Enter new phone number:', contacts.find(c => c.name === name).phone);
+            
+            if (newPhone === null) return;
+            if (!newPhone.trim()) {
+                showMessage('Phone number cannot be empty', 'error');
+                return;
+            }
+
+            const contact = contacts.find(c => c.name === name);
+            if (contact) {
+                contact.phone = newPhone.trim();
+                saveContacts();
+                showMessage('Contact updated successfully!', 'success');
+                displayContacts();
+            }
+        }
+
+        function confirmDelete(name) {
+            if (confirm(`Are you sure you want to delete ${name}?`)) {
+                deleteContactByName(name);
+            }
+        }
+
+        function deleteContact(event) {
+            event.preventDefault();
+            
+            const deleteName = document.getElementById('deleteName').value.trim();
+            deleteContactByName(deleteName);
+            document.getElementById('deleteName').value = '';
+        }
+
+        function deleteContactByName(name) {
+            const index = contacts.findIndex(c => c.name.toLowerCase() === name.toLowerCase());
+            
+            if (index !== -1) {
+                const deletedName = contacts[index].name;
+                contacts.splice(index, 1);
+                saveContacts();
+                showMessage(`${deletedName} deleted successfully!`, 'success');
+                displayContacts();
+            } else {
+                showMessage('Contact not found', 'error');
+            }
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Add event listener for search filter
+        document.getElementById('searchFilter').addEventListener('input', displayContacts);
+
+        // Load sample data if empty
+        if (contacts.length === 0) {
+            contacts = [
+                { name: 'John Doe', phone: '123-456-7890' },
+                { name: 'Jane Smith', phone: '098-765-4321' }
+            ];
+            saveContacts();
+            showMessage('Sample contacts loaded!', 'info');
+        }
+    </script>
+</body>
+</html>
